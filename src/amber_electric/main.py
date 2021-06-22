@@ -44,6 +44,7 @@ class AmberElectric(object):
         longitude=None,
         postcode=None,
         loop=None,
+        apikey=None,
     ):
         """
         Parameters
@@ -72,9 +73,10 @@ class AmberElectric(object):
 
         api_username = username if username else os.environ.get("AMBER_USERNAME", None)
         api_password = password if password else os.environ.get("AMBER_PASSWORD", None)
+        api_key = apikey if apikey else os.environ.get("AMBER_APIKEY", None)
 
         self.__protocol = Protocol(
-            username=api_username, password=api_password, loop=loop
+            username=api_username, password=api_password, apikey=api_key, loop=loop
         )
 
         self.__market = Market(
@@ -84,7 +86,7 @@ class AmberElectric(object):
             postcode=postcode,
         )
 
-        if api_username and api_password:
+        if (api_username and api_password) or api_key:
             self.__price = Price(protocol=self.__protocol)
             self.__usage = Usage(protocol=self.__protocol)
 

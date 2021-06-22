@@ -11,7 +11,7 @@ from ..auth import auth as AmberAuth
 _LOGGER = logging.getLogger(__name__)
 logging.getLogger("backoff").addHandler(logging.StreamHandler())
 
-_DEFAULT_HOST = "api-bff.amberelectric.com.au"
+_DEFAULT_HOST = "api.amberelectric.com.au"
 _DEFAULT_VERSION = "1.0"
 
 _REFRENCE = "https://github.com/troykelly/python-amber-electric"
@@ -28,13 +28,16 @@ def fatal_code(e):
 
 
 class Protocol(object):
-    def __init__(self, username=None, password=None, loop=None):
+    def __init__(self, username=None, password=None, apikey=None, loop=None):
         super().__init__()
         self.__host = _DEFAULT_HOST
         self.__version = _DEFAULT_VERSION
         self.__username = username
         self.__password = password
         self.__loop = loop if loop else asyncio.get_event_loop()
+        # self.__apikey = apikey
+        if apikey:
+            self.__auth = {"id_token": apikey}
 
         self.__api_url = f"https://{self.__host}/api/v{self.__version}"
 
