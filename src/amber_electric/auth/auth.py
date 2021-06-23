@@ -9,19 +9,24 @@ __USERNAME = None
 __PASSWORD = None
 
 
-async def auth(protocol=None, username=None, password=None):
+async def auth(protocol=None, username=None, password=None, apikey=None):
     """Authentication against the Amber Electric API
 
     Attributes:
         protocol (object): The protocol object
         username (string): The username to be used in authentication
         password (string): The password to be used in authentication
+        apikey (string): The API key to be used in authentication
 
     Returns:
         success (boolean): The authentication state
     """
     if protocol is not None:
         __PROTOCOL = protocol
+
+    if apikey is not None:
+        # Skip the auth API - We already have our API key.
+        return Auth(apikey=apikey)
 
     if username is not None:
         __USERNAME = username
@@ -50,8 +55,11 @@ async def auth(protocol=None, username=None, password=None):
 
 
 class Auth(object):
-    def __init__(self, amber_payload=None):
+    def __init__(self, amber_payload=None, apikey=None):
         super().__init__()
+        if apikey is not None:
+            self.__id_token = apikey
+            return
         if amber_payload is not None and "data" in amber_payload:
             data = amber_payload["data"]
             self.__name = data["name"] if "name" in data else None

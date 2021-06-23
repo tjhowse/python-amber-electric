@@ -1,3 +1,3 @@
-"""Amber Electricl Protocol Handler"""
+"""Get site information"""
 
 from .sites import Sites

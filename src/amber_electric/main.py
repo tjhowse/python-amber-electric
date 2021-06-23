@@ -9,6 +9,7 @@ from .protocol import Protocol
 from .price import Price
 from .usage import Usage
 from .market import Market
+from .sites import Sites
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,6 +68,7 @@ class AmberElectric(object):
         self.__price = None
         self.__usage = None
         self.__market = None
+        self.__sites = None
 
         self.__poll_complete_push = list()
         self.__polling_active = False
@@ -89,6 +91,7 @@ class AmberElectric(object):
         if (api_username and api_password) or api_key:
             self.__price = Price(protocol=self.__protocol)
             self.__usage = Usage(protocol=self.__protocol)
+            self.__sites = Sites(protocol=self.__protocol)
 
     async def auth(self):
         return await self.__protocol.auth()
@@ -100,6 +103,8 @@ class AmberElectric(object):
             await self.__usage.update()
         if self.__market:
             await self.__market.update()
+        if self.__sites:
+            await self.__sites.update()
 
     async def __poll_for_updates(self, interval_delta):
         self.__polling_active = True
@@ -118,6 +123,8 @@ class AmberElectric(object):
                     data["usage"] = self.__usage
                 if self.__market:
                     data["market"] = self.__market
+                if self.__market:
+                    data["sites"] = self.__sites
                 for poll_complete_push in self.__poll_complete_push:
                     function_name = poll_complete_push.__name__
                     _LOGGER.debug(f"Sending update to {function_name}")
@@ -208,5 +215,11 @@ class AmberElectric(object):
     def address(self):
         try:
             return self.__market.address
+        except AttributeError:
+            return None
+    @property
+    def sites(self):
+        try:
+            return self.__sites
         except AttributeError:
             return None

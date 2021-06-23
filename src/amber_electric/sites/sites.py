@@ -18,13 +18,24 @@ to get a list of sites accessible with this account, then query /sites/<siteId>/
 
 '''
 
-
 class Sites(object):
     def __init__(self, protocol=None):
         super().__init__()
         self.__protocol = protocol
 
+    async def get_sites(self):
+        response = await self.__protocol.api_get(path="sites")
+
+        #TODO Unpack this response.
+
+        print(f"Response: {response}")
+        if not (response and "data" in response):
+            return None
+        self.__sites = response["data"]
+        return self
+
     async def update(self):
+        return self
         data = {"headers": {"normalizedNames": {}, "lazyUpdate": None, "headers": {}}}
         response = await self.__protocol.api_post(path="Price/GetPriceList", json=data)
         if not (response and "data" in response):
@@ -44,6 +55,13 @@ class Sites(object):
     def forecast(self):
         try:
             return self.__forecast
+        except AttributeError:
+            return None
+
+    @property
+    def sites(self):
+        try:
+            return self.__sites
         except AttributeError:
             return None
 

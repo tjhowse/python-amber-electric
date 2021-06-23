@@ -11,8 +11,8 @@ from ..auth import auth as AmberAuth
 _LOGGER = logging.getLogger(__name__)
 logging.getLogger("backoff").addHandler(logging.StreamHandler())
 
-_DEFAULT_HOST = "api.amberelectric.com.au"
-_DEFAULT_VERSION = "1.0"
+_DEFAULT_HOST = "api.amber.com.au"
+_DEFAULT_VERSION = "1"
 
 _REFRENCE = "https://github.com/troykelly/python-amber-electric"
 """Used to identify this to Amber Electric API"""
@@ -35,17 +35,15 @@ class Protocol(object):
         self.__username = username
         self.__password = password
         self.__loop = loop if loop else asyncio.get_event_loop()
-        # self.__apikey = apikey
-        if apikey:
-            self.__auth = {"id_token": apikey}
+        self.__apikey = apikey
 
-        self.__api_url = f"https://{self.__host}/api/v{self.__version}"
+        self.__api_url = f"https://{self.__host}/v{self.__version}"
 
         self.__session = None
 
     async def auth(self):
         auth_response = await AmberAuth(
-            protocol=self, username=self.__username, password=self.__password
+            protocol=self, username=self.__username, password=self.__password, apikey=self.__apikey
         )
         if not auth_response:
             raise AmberElectricAuthenticationFailed(
@@ -217,7 +215,7 @@ class Protocol(object):
                 headers["Authorization"] = id_token
             if refresh_token:
                 headers["RefreshToken"] = refresh_token
-
+            headers["accept"] = "application/json"
         try:
             response = session.request(
                 method, url, params=params, json=json, headers=headers

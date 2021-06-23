@@ -1,3 +1,3 @@
-"""Amber Electricl Protocol Handler"""
+"""Amber Electric Protocol Handler"""
 
 from .protocol import Protocol
